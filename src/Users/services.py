@@ -30,9 +30,7 @@ class UserService():
         user_update_dict = await self.get_user_by_id(user_id, session)
         if user_update_dict is None:
             return None
-        print(user_update_dict)
         update_dict = user_update.model_dump()
-        print(update_dict)
         for key, value in update_dict.items():
             if value is not None:
                 setattr(user_update_dict, key, value)

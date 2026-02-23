@@ -2,7 +2,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.auth.schemas import CreateAuthModel, UpdateAuthModel, AuthModel
 from src.auth.models import AuthBase
 from sqlmodel import select, update, delete, desc
-from src.auth.utils import hash_password, verify_password
+from src.auth.utils import hash_password, verify_password, create_access_token
+from datetime import timedelta
+
+REFRESH_TOKEN_EXPIRY = 2
 
 class AuthService():
 
@@ -39,7 +42,16 @@ class AuthService():
         if not verify_password(auth.password, auth_dict.password):
             return False
         
-        return True
+        auth_data = {
+            "email" : auth_dict.username,
+            "id" : str(auth_dict.id)
+        }
+
+        access_token = create_access_token(auth_data)
+
+        refresh_token = create_access_token(auth_data, expiry=timedelta(days=REFRESH_TOKEN_EXPIRY), refresh=True)
+
+        return {"access_token": access_token, "refresh_token": refresh_token}
     
     async def updateAuth(self, auth_email : str, update_auth : UpdateAuthModel, session : AsyncSession) -> AuthBase:
 

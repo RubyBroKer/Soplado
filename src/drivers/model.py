@@ -1,16 +1,14 @@
 from sqlmodel import SQLModel, Field, Column
 import sqlalchemy.dialects.postgresql as pg
-import uuid
 import datetime
 
-class UserBase(SQLModel, table = True):
-    __tablename__ = "users"
+class DriverBase(SQLModel, table = True):
+    __tablename__ = "drivers"
 
-    id: uuid.UUID = Field(
+    id: int = Field(
         sa_column=Column(
-            pg.UUID,
+            pg.BIGSERIAL,
             primary_key=True,
-            default=uuid.uuid4(),
             nullable=False
         )
     )
@@ -30,4 +28,4 @@ class UserBase(SQLModel, table = True):
 
     def __repr__(self):
         
-        return f"<User id={self.id!r} name={self.name!r} email={self.email!r}>"
+        return f"<Driver id={self.id!r} name={self.name!r} email={self.email!r}>"

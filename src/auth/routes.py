@@ -6,7 +6,9 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from fastapi import Depends, status, HTTPException
 from src.auth.utils import create_access_token, decode_access_token
-from src.auth.dependencies import JWTBearer
+from src.auth.dependencies import JWTBearer, RefreshTokenBearer, AccessTokenBearer, get_current_user
+from datetime import datetime
+from src.db.redis import token_blocklist, add_jti_to_blocklist
 
 Auth_Router = APIRouter()
 Auth_Service = AuthService()
@@ -48,3 +50,24 @@ async def delete_auth(email : str, session : AsyncSession = Depends(get_session)
     if deleted_auth is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return {"username": deleted_auth.username}
+
+@Auth_Router.get("/refresh_token")
+async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
+    expiry_timestamp = token_details["exp"]
+
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        new_access_token = create_access_token(user_data=token_details["user"])
+
+        return JSONResponse(content={"access_token": new_access_token})
+
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid refresh token")
+
+@Auth_Router.post("/logout")
+async def logout(token_details: dict = Depends(AccessTokenBearer())):
+    jti = token_details["jti"]
+    await add_jti_to_blocklist(jti)
+    return JSONResponse(content={"message": "Successfully logged out"})
+
+@Auth_Router.get("/me")
+async def get_user_profile(current_user = Depends(get_current_user)):
+    return current_user

@@ -5,12 +5,13 @@ from fastapi.exceptions import HTTPException
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.Users.services import UserService
-from src.auth.dependencies import JWTBearer
+from src.auth.dependencies import JWTBearer, AccessTokenBearer, RefreshTokenBearer
 
 
 User_Router = APIRouter()
 User_Service = UserService()
 jwt_bearer = JWTBearer()
+access_token_bearer = AccessTokenBearer()
 
 @User_Router.get('/get_headers',status_code=500)
 async def get_headers(
@@ -29,7 +30,7 @@ async def get_headers(
 @User_Router.get("/", response_model= List[ResponseModel])
 async def get_users(
     session : AsyncSession = Depends(get_session),
-    user_details = Depends(jwt_bearer)) -> list:
+    user_details = Depends(access_token_bearer)) -> list:
     
     Users = await User_Service.get_all_users(session)
     return Users
@@ -37,7 +38,7 @@ async def get_users(
 @User_Router.post("/", status_code=status.HTTP_201_CREATED, response_model=ResponseModel)
 async def create_user(user_dto : CreateUserModel, 
                       session : AsyncSession = Depends(get_session),
-                      user_details = Depends(jwt_bearer)) -> dict:
+                      user_details = Depends(access_token_bearer)) -> dict:
     
     new_user = await User_Service.create_user(user_dto, session)
     return new_user
@@ -45,7 +46,7 @@ async def create_user(user_dto : CreateUserModel,
 @User_Router.get("/{user_id}", response_model=ResponseModel)
 async def get_by_userId(user_id:str, 
                         session : AsyncSession = Depends(get_session),
-                        user_details = Depends(jwt_bearer)) -> dict:
+                        user_details = Depends(access_token_bearer)) -> dict:
 
     user = await User_Service.get_user_by_id(user_id, session)
     if user is None:
@@ -60,7 +61,7 @@ async def get_by_userId(user_id:str,
 async def update_user(user_id:str, 
                       user_data : UpdateModel, 
                       session : AsyncSession = Depends(get_session),
-                      user_details = Depends(jwt_bearer)) -> dict:
+                      user_details = Depends(access_token_bearer)) -> dict:
 
     user_update = await User_Service.update_user(user_id, user_data, session)
 
@@ -75,7 +76,7 @@ async def update_user(user_id:str,
 @User_Router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id:str,
                     session : AsyncSession = Depends(get_session),
-                    user_details = Depends(jwt_bearer)) -> None:
+                    user_details = Depends(access_token_bearer)) -> None:
     user_delete = await User_Service.delete_user(user_id, session)
         
     if user_delete is None:

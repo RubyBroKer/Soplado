@@ -13,6 +13,8 @@ engine: AsyncEngine = create_async_engine(
 async def init_db():
     async with engine.begin() as conn:
             from src.Users.model import UserBase
+            from src.drivers.model import DriverBase
+            from src.auth.model import AuthBase
             await conn.run_sync(SQLModel.metadata.create_all)
 
 async def get_session() -> AsyncSession:

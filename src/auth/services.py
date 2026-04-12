@@ -1,6 +1,6 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.auth.schemas import CreateAuthModel, UpdateAuthModel, AuthModel
-from src.auth.models import AuthBase
+from src.auth.model import AuthBase
 from sqlmodel import select, update, delete, desc
 from src.auth.utils import hash_password, verify_password, create_access_token
 from datetime import timedelta
@@ -29,18 +29,17 @@ class AuthService():
 
         return new_auth
     
-    async def loginAuth(self, auth : AuthModel, session : AsyncSession) -> bool:
+    async def loginAuth(self, auth : AuthModel, session : AsyncSession) -> dict:
 
         auth_dict = await self.get_auth_email(auth.username, session)
 
         if auth_dict is None:
-            return False
+            return None
         
-        if not auth_dict.is_verified:
-            return False
-        
+        # if not auth_dict.is_verified:
+        #     return None
         if not verify_password(auth.password, auth_dict.password):
-            return False
+            return None
         
         auth_data = {
             "email" : auth_dict.username,

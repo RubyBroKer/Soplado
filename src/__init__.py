@@ -1,6 +1,9 @@
 from fastapi import FastAPI
+#import routers
 from src.Users.routes import User_Router
 from src.auth.routes import Auth_Router
+from src.drivers.routes import Driver_Router
+
 from contextlib import asynccontextmanager
 from src.db.main import init_db
 version = "v1"
@@ -21,3 +24,4 @@ app = FastAPI(
 
 app.include_router(User_Router, prefix=f"/users", tags= ['Users'])
 app.include_router(Auth_Router, prefix=f"/auth", tags= ['Auth'])
+app.include_router(Driver_Router, prefix=f"/drivers", tags= ['Drivers'])

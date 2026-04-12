@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi import Request, status, dependencies
 from src.auth.utils import decode_access_token
-from src.db.redis import token_blocklist, token_in_blocklist
+# from src.db.redis import token_blocklist, token_in_blocklist
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.auth.services import AuthService
@@ -20,8 +20,7 @@ class JWTBearer(HTTPBearer):
         credentials = await super().__call__(request)
         token = credentials.credentials if credentials else None
         token_data = decode_access_token(token) if token else None
-        if await token_in_blocklist(token_data["jti"]):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has been revoked")
+        
         self.verify_token_data(token_data)
 
         return token_data

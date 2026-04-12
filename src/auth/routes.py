@@ -8,7 +8,7 @@ from fastapi import Depends, status, HTTPException
 from src.auth.utils import create_access_token, decode_access_token
 from src.auth.dependencies import JWTBearer, RefreshTokenBearer, AccessTokenBearer, get_current_user
 from datetime import datetime
-from src.db.redis import token_blocklist, add_jti_to_blocklist
+# from src.db.redis import token_blocklist, add_jti_to_blocklist
 
 Auth_Router = APIRouter()
 Auth_Service = AuthService()
@@ -17,9 +17,7 @@ jwt_bearer = JWTBearer()
 @Auth_Router.post("/signup", response_model=ResponseModel)
 async def signup(
     auth_dto : CreateAuthModel, 
-    session : AsyncSession = Depends(get_session),
-    user_details = Depends(jwt_bearer)
-    ) -> dict:
+    session : AsyncSession = Depends(get_session)) -> dict:
     
     new_auth = await Auth_Service.createAuth(auth_dto, session)
     return new_auth
@@ -56,18 +54,18 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
     expiry_timestamp = token_details["exp"]
 
     if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
-        new_access_token = create_access_token(user_data=token_details["user"])
+        new_access_token = create_access_token(auth_data=token_details["auth_data"])
 
         return JSONResponse(content={"access_token": new_access_token})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid refresh token")
 
-@Auth_Router.post("/logout")
-async def logout(token_details: dict = Depends(AccessTokenBearer())):
-    jti = token_details["jti"]
-    await add_jti_to_blocklist(jti)
-    return JSONResponse(content={"message": "Successfully logged out"})
+# @Auth_Router.post("/logout")
+# async def logout(token_details: dict = Depends(AccessTokenBearer())):
+#     jti = token_details["jti"]
+#     await add_jti_to_blocklist(jti)
+#     return JSONResponse(content={"message": "Successfully logged out"})
 
-@Auth_Router.get("/me")
-async def get_user_profile(current_user = Depends(get_current_user)):
-    return current_user
+# @Auth_Router.get("/me")
+# async def get_user_profile(current_user = Depends(get_current_user)):
+#     return current_user

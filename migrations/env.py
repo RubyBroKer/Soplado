@@ -6,7 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from src.auth.models import AuthBase
+from src.auth.model import AuthBase
 from src.Users.model import UserBase
 from sqlmodel import SQLModel
 from src.config import Config

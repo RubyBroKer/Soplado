@@ -7,7 +7,7 @@ class DriverBase(SQLModel, table = True):
 
     id: int = Field(
         sa_column=Column(
-            pg.BIGSERIAL,
+            pg.UUID,
             primary_key=True,
             nullable=False
         )

@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.Users.schemas import CreateUserModel, UpdateModel
 from sqlmodel import select, update, delete, desc
-from src.Users.model import DriverBase
+from src.drivers.model import DriverBase
 
 class DriverService():
 

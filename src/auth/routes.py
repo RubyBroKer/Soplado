@@ -66,6 +66,6 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
 #     await add_jti_to_blocklist(jti)
 #     return JSONResponse(content={"message": "Successfully logged out"})
 
-# @Auth_Router.get("/me")
-# async def get_user_profile(current_user = Depends(get_current_user)):
-#     return current_user
+@Auth_Router.get("/me")
+async def get_user_profile(current_user = Depends(get_current_user)):
+    return current_user

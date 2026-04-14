@@ -54,6 +54,6 @@ async def get_current_user(
         token_data: dict = Depends(AccessTokenBearer())
         , session : AsyncSession = Depends(get_session)
         ) -> dict:
-    email = token_data["user"]["email"]
-    user = await auth_service.get_user_by_email(email, session)
+    email = token_data["auth_data"]["email"]
+    user = await auth_service.get_auth_email(email, session)
     return user

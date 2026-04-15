@@ -2,6 +2,8 @@ from sqlmodel import SQLModel, Field, Column
 import sqlalchemy.dialects.postgresql as pg
 import uuid
 import datetime
+from sqlalchemy import Column, BigInteger
+
 
 class BookingBase(SQLModel, table = True):
     __tablename__ = "bookings"
@@ -35,3 +37,25 @@ class BookingBase(SQLModel, table = True):
     def __repr__(self):
         
         return f"<Booking id={self.id!r} user_id={self.user_id!r} booking_date={self.booking_date!r}>"
+    
+
+class TravellingDetails(SQLModel, table=True):
+
+    __tablename__ = "transport_pricing"
+
+    id: uuid.UUID = Field(
+        sa_column=Column(
+            pg.UUID,
+            primary_key=True,
+            default=uuid.uuid4(),
+            nullable=False
+        )
+    )
+    city: str
+    vehicle_type: str
+    base_fare_inr : float
+    cost_per_km_inr : float
+    surge_multiplier: float
+
+    def __repr__(self):
+        return f"<TravellingDetails city={self.city!r} vehicle_type={self.vehicle_type!r} base_fare_inr={self.base_fare_inr!r}>"

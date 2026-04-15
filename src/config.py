@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM : str
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    OPENCAGE_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

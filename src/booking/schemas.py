@@ -15,12 +15,14 @@ class BookingBase(BaseModel):
     created_at: Optional[datetime] = None  
 
 class RequestBookingModel(BaseModel):
-    user_id: uuid.UUID
     booking_date: datetime
     ride : str
     started_at: datetime
-    pickup_location: str
-    dropoff_location: str
+    longitude_pickup: str
+    latitude_pickup: str
+    longitude_dropoff: str
+    latitude_dropoff: str
+    current_city: str
 
 class ResponseBookingModel(BaseModel):
     id: uuid.UUID
@@ -32,3 +34,16 @@ class ResponseBookingModel(BaseModel):
     dropoff_location: str
     status: str
     created_at: datetime
+
+class VehicleDetails(BaseModel):
+    distance : float
+    vehicle_type: str
+    total_fare: str
+
+class RequestVehicles(BaseModel):
+    longitude_pickup: str
+    latitude_pickup: str
+    longitude_dropoff: str
+    latitude_dropoff: str
+    current_city: str
+

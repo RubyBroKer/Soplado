@@ -16,6 +16,7 @@ async def init_db():
             from src.drivers.model import DriverBase
             from src.auth.model import AuthBase
             from src.booking.model import BookingBase
+            from src.booking.model import TravellingDetails
             await conn.run_sync(SQLModel.metadata.create_all)
 
 async def get_session() -> AsyncSession:

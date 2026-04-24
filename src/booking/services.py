@@ -4,6 +4,7 @@ from sqlmodel import select, update, delete, desc
 from src.booking.model import BookingBase, TravellingDetails
 from src.config import Config
 import requests
+from kafka import KafkaProducer
 
 class BookingService():
 
@@ -52,4 +53,29 @@ class BookingService():
                 "vehicle_type": vehicle.vehicle_type,
                 "total_fare": round(total_fare, 2)
             })
+        
         return vehicle_options
+    
+    async def book_vehicle(self, user_id : str, requestDTO : RequestBookingModel, session : AsyncSession):
+        # Create a new booking record in the database
+
+        new_booking = BookingBase(
+            user_id=user_id,
+            booking_date=requestDTO.booking_date,
+            ride=requestDTO.ride,
+            started_at=requestDTO.started_at,
+            pickup_location=f"{requestDTO.latitude_pickup},{requestDTO.longitude_pickup}",
+            dropoff_location=f"{requestDTO.latitude_dropoff},{requestDTO.longitude_dropoff}",
+            status="confirmed"
+        )
+        session.add(new_booking)
+        await session.commit()
+        await session.refresh(new_booking)
+
+        # Send booking details to Kafka topic for further processing
+        producer = KafkaProducer(bootstrap_servers=Config.KAFKA_BOOTSTRAP_SERVERS)
+        producer.send(Config.KAFKA_TOPIC, value=new_booking.model_dump_json().encode('utf-8'))
+        producer.flush()
+        producer.close()
+
+        return {"message": "Vehicle booked successfully", "booking_id": new_booking.id}        

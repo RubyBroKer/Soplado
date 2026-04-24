@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     OPENCAGE_API_KEY: str
+    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
+    KAFKA_TOPIC : str = "bookings"
 
     model_config = SettingsConfigDict(
         env_file=".env",

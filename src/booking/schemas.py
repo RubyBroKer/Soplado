@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 import uuid
 from datetime import datetime
@@ -23,6 +23,16 @@ class RequestBookingModel(BaseModel):
     longitude_dropoff: str
     latitude_dropoff: str
     current_city: str
+
+    @field_validator("booking_date", "started_at", mode="before")
+    @classmethod
+    def parse_dmy_dates(cls, value):
+        if isinstance(value, str):
+            try:
+                return datetime.strptime(value, "%d-%m-%Y")
+            except ValueError:
+                return value
+        return value
 
 class ResponseBookingModel(BaseModel):
     id: uuid.UUID

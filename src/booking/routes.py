@@ -19,6 +19,16 @@ async def check_vehicles(requestDTO : RequestVehicles,
     if not available_vehicles:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No available vehicles found in the current city.")
     return available_vehicles
+
+@Booking_Router.post("/book", status_code=status.HTTP_200_OK)
+async def book_vehicle(requestDTO : RequestBookingModel,
+                                 session: AsyncSession = Depends(get_session),
+                                 token: str = Depends(access_token_bearer)):
+    
+
+    user_id = token["auth_data"]["id"]
+    booking_status = await Booking_Service.book_vehicle(user_id, requestDTO, session)
+    return booking_status
     
 
 

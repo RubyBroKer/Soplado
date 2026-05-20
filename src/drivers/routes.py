@@ -9,7 +9,6 @@ from src.drivers.services import DriverService
 
 Driver_Router = APIRouter()
 Driver_Service = DriverService()
-jwt_bearer = JWTBearer()
 access_token_bearer = AccessTokenBearer()
 
 

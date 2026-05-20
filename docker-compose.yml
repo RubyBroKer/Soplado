@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@host.docker.internal:5432/uber_db
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      OPENCAGE_API_KEY: ${OPENCAGE_API_KEY}
+    command: ["uvicorn", "src:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - .:/app
+
